@@ -1,0 +1,3 @@
+Release v1.1.0 first production-signing validation
+GitHub repository secret: IMAPS_RELEASE_KEY_BUNDLE
+Do not write private credentials into this file.
