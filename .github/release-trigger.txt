@@ -1,1 +1,1 @@
-Release v1.1.3: disable entire-page WebView pinch zoom; preserve map's own JavaScript zoom. Same permanent app ID and signing key. Upload this newer release to Cafe Bazaar.
+Release v1.1.4: Add compact in-app floating full original IMAPS logo at top center; survey lookup and map zoom remain unchanged. Use existing signing secret and same application ID.

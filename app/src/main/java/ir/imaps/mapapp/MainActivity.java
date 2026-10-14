@@ -29,6 +29,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -255,6 +256,24 @@ public class MainActivity extends Activity {
         });
 
         ContactOverlay.attach(this, content);
+
+        // Original IMAPS globe-and-lettering logo, shown only in the Android app.
+        // A small floating badge keeps the full map and survey tools visible.
+        FrameLayout logoBadge = new FrameLayout(this);
+        logoBadge.setBackground(bg(Color.WHITE, 12));
+        logoBadge.setElevation(dp(4));
+        FrameLayout.LayoutParams badgeParams = new FrameLayout.LayoutParams(
+            dp(76), dp(76), Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        badgeParams.topMargin = dp(6);
+        content.addView(logoBadge, badgeParams);
+
+        ImageView logoImage = new ImageView(this);
+        logoImage.setImageResource(R.drawable.imaps_full_logo);
+        logoImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        logoImage.setContentDescription("لوگوی اصلی آیمپس ایران مپس");
+        FrameLayout.LayoutParams imageParams = new FrameLayout.LayoutParams(
+            dp(70), dp(70), Gravity.CENTER);
+        logoBadge.addView(logoImage, imageParams);
 
         if (state == null || web.restoreState(state) == null) web.loadUrl(HOME_URL);
     }

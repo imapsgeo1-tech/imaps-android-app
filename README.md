@@ -39,3 +39,6 @@ Fix HTTP 404 in aerial photo year lookup: load the verified WordPress page by st
 
 ## v1.1.3
 Disable WebView's built-in page pinch and double-tap zoom. All sidebar and controls stay fixed-size; the embedded interactive map retains its own JavaScript-based touch zoom and the map +/- controls. WordPress remains unchanged. Verify on physical Android device before publishing.
+
+## v1.1.4
+Add original user-provided IMAPS Iran Maps complete globe-and-lettering logo as a tiny native badge centered at top of the in-app survey map. Keep the full-screen site content, hidden WordPress header/footer, fixed UI zoom and JavaScript map zoom unchanged. Image is a small palette-optimized rendition of the original logo, included locally and usable without a separate image request. The website is unchanged.
