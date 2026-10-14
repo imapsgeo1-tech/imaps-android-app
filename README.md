@@ -18,3 +18,6 @@ The actual interactive map content is loaded from the website and requires inter
 
 ## v1.0.2
 Full-screen map UI: native header and footer removed. WordPress header/footer suppressed in embedded page while keeping mapping tools. Original 512px logo fetched at build from WordPress media library for launcher icon.
+
+## v1.0.3
+Only within Android WebView: hide WordPress Karauos/Elementor site header/footer and use fullscreen status bar, leaving map controls and public website unchanged.

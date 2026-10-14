@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
     private TextView errorView;
     private boolean fullscreen = false;
     private boolean loadError = false;
+    private int lastHeaderPatch = -20;
     private android.webkit.ValueCallback<Uri[]> uploadCallback;
     private GeolocationPermissions.Callback locationCallback;
     private String locationOrigin;
@@ -86,7 +87,8 @@ public class MainActivity extends Activity {
     @SuppressLint("SetJavaScriptEnabled")
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        getWindow().setStatusBarColor(NAVY);
+        getWindow().setFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setNavigationBarColor(NAVY);
 
         root = new LinearLayout(this);
@@ -141,6 +143,11 @@ public class MainActivity extends Activity {
                 loadError = false;
                 errorView.setVisibility(View.GONE);
                 progress.setVisibility(View.VISIBLE);
+                lastHeaderPatch = -20;
+            }
+            @Override
+            public void onPageCommitVisible(WebView v, String url) {
+                hideWebsiteHeader();
             }
             @Override
             public void onPageFinished(WebView v, String url) {
@@ -163,6 +170,10 @@ public class MainActivity extends Activity {
             @Override
             public void onProgressChanged(WebView view, int percent) {
                 progress.setProgress(percent);
+                if (percent >= 10 && percent - lastHeaderPatch >= 20) {
+                    lastHeaderPatch = percent;
+                    hideWebsiteHeader();
+                }
                 if (percent == 100) progress.setVisibility(View.GONE);
             }
             @Override
@@ -285,26 +296,13 @@ public class MainActivity extends Activity {
         }
     }
 
-    // Remove WordPress theme chrome, not the WebGIS map controls.
+    // CSS and DOM changes are applied only in the Android app WebView.
     private void hideWebsiteHeader() {
         Uri uri = Uri.parse(web.getUrl() == null ? HOME_URL : web.getUrl());
         String host = uri.getHost();
         if (host == null || !(host.equalsIgnoreCase("i-maps.ir") ||
               host.toLowerCase().endsWith(".i-maps.ir"))) return;
-        String script = "(function(){" +
-            "if(document.getElementById('imaps-android-clean'))return;" +
-            "var el=document.createElement('style');el.id='imaps-android-clean';" +
-            "el.textContent='#masthead,.site-header,.site-footer,#colophon," +
-            ".elementor-location-header,.elementor-location-footer," +
-            ".page-header,.entry-header,.breadcrumb,.breadcrumbs," +
-            ".elementor-widget-theme-post-title,.page-title,'+" +
-            "'#wpadminbar{display:none!important;}" +
-            "html,body{margin:0!important;padding:0!important;}" +
-            "#content,.site-content,.content-area,main.site-main{" +
-            "max-width:100%!important;width:100%!important;" +
-            "margin:0!important;padding:0!important;}';" +
-            "document.head.appendChild(el);" +
-            "})();";
+        String script = "(function(){try{var id='imaps-android-only-style';var css=\"#wpadminbar,#masthead,#site-header,#site-header-wrap,#header,#header-wrap,body > header,header[role='banner'],header.site-header,.site-header,.site-header-wrap,.main-header,.header-main,.header-area,.header-wrapper,.header-container,.header-top,.top-header,.top-bar,.topbar,.topbar-area,.mobile-header,.mobile-header-wrapper,.mobile-menu-header,.elementor-location-header,.elementor-header,[class*='karauos-header'],[id*='karauos-header'],[class*='themento-header'],.sticky-header,.sticky-header-wrap,.site-footer,#colophon,#site-footer,footer[role='contentinfo'],.elementor-location-footer,.page-header,.entry-header,.page-title-area,.page-title-wrap,.page-title-bar,.page-title,.breadcrumb,.breadcrumbs,#breadcrumb,.breadcrumb-wrapper,.scroll-to-top,.back-to-top{display:none!important;height:0!important;max-height:0!important;min-height:0!important;margin:0!important;padding:0!important;visibility:hidden!important;}html,body{padding-top:0!important;margin-top:0!important;}#page,.site,#content,.site-content,#primary,.content-area,main.site-main,.site-main{padding-top:0!important;margin-top:0!important;}#content,.site-content,#primary,.content-area,main.site-main,.site-main{max-width:100%!important;width:100%!important;}\";function apply(){if(!document.head)return;var style=document.getElementById(id);if(!style){style=document.createElement('style');style.id=id;style.textContent=css;document.head.appendChild(style);}if(!document.body)return;document.querySelectorAll(\"#wpadminbar,#masthead,#site-header,#site-header-wrap,#header,#header-wrap,body > header,header[role='banner'],header.site-header,.site-header,.main-header,.header-main,.header-area,.header-wrapper,.header-container,.top-header,.top-bar,.topbar,.mobile-header,.elementor-location-header,.elementor-header,[class*='karauos-header'],[id*='karauos-header'],[class*='themento-header'],.sticky-header,.site-footer,#colophon,#site-footer,footer[role='contentinfo'],.elementor-location-footer,.page-header,.entry-header,.page-title-area,.page-title-wrap,.page-title-bar,.breadcrumb,.breadcrumbs\").forEach(function(node){if(node.closest&&node.closest('#imaps-coordinate-map,#imaps-map,.leaflet-container'))return;node.style.setProperty('display','none','important');});}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});if(!window.__imapsAppHeaderWatcher&&document.documentElement){window.__imapsAppHeaderWatcher=new MutationObserver(function(changes){if(changes.some(function(change){return change.addedNodes.length>0;}))apply();});window.__imapsAppHeaderWatcher.observe(document.documentElement,{childList:true,subtree:true});}}catch(e){}})();";
         web.evaluateJavascript(script, null);
     }
 
