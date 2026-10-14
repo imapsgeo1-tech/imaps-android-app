@@ -23,28 +23,31 @@ This repo contains only source code. The signing key is NEVER committed.
 - Nothing is changed in the WordPress site by this repository.
 
 ## Package
-- Name: نقشه آنلاین آیمپس
-- Application ID: `ir.imaps.mapapp`
-- Release version: `1.1.0` (`versionCode=6`)
+- Name: سامانه استعلام عکس هوایی آیمپس
+- Application ID: `ir.imaps.mapapp` (same as the first signed release)
+- Release version: `1.1.1` (`versionCode=7`)
 - Minimum Android: API 23 (Android 6.0)
 - Native contact buttons: WhatsApp and device dialer, with no direct call permission
-- Web content: https://i-maps.ir/
+- Web content: https://i-maps.ir/سامانه-استعلام-سالهای-عکسبرداری-آیمپس/
 
 ## Proposed Bazaar listing (Farsi)
-Title: نقشه آنلاین آیمپس - تبدیل مختصات
+Title: سامانه استعلام عکس هوایی آیمپس
 
-Short: نقشه آنلاین و تبدیل مختصات UTM و جغرافیایی با امکانات کاربردی آیمپس.
+Short: استعلام سال‌های عکس‌برداری هوایی قدیمی، مقیاس و تعداد تصاویر بر اساس موقعیت مکانی.
 
 Description:
-نقشه آنلاین آیمپس، دسترسی سریع به ابزارهای نقشه و تبدیل مختصات را در گوشی اندرویدی فراهم می‌کند. نقشه و ابزارهای سامانه از وب‌سایت i-maps.ir بارگذاری می‌شوند و برای استفاده به اینترنت نیاز دارند.
+سامانه استعلام عکس هوایی آیمپس امکان بررسی و جست‌وجوی سال‌های عکس‌برداری هوایی ثبت‌شده در پایگاه اطلاعاتی سامانه را بر اساس موقعیت مکانی در اختیار کاربران قرار می‌دهد. با استفاده از نقشه و ابزارهای جست‌وجوی برنامه، می‌توانید اطلاعات مربوط به سال‌های عکس‌برداری، مقیاس و تعداد عکس‌های موجود را بررسی کنید.
 
 امکانات:
-- مشاهده و جابه‌جایی روی نقشه آنلاین
-- استفاده از ابزارهای سامانه نقشه آیمپس و تبدیل مختصات
-- دسترسی به موقعیت مکانی با اجازه کاربر
-- انتخاب فایل در ابزارهای پشتیبانی‌کننده
-- ارتباط با پشتیبانی از طریق واتساپ یا شماره‌گیر تلفن
+- تعیین محدوده موردنظر روی نقشه
+- استعلام سال‌های عکس‌برداری هوایی قدیمی
+- مشاهده مقیاس و تعداد عکس‌های ثبت‌شده در نتایج
+- استفاده از خدمات آنلاین سامانه آیمپس
+- ارتباط با پشتیبانی از طریق واتساپ و تلفن
 
+توجه: نمایش نتیجه استعلام به اطلاعات موجود در پایگاه داده بستگی دارد و لزوماً به معنی موجودبودن همه تصاویر تاریخی برای تمام مناطق نیست. استفاده از برنامه به اینترنت نیاز دارد.
+
+وب‌سایت: https://i-maps.ir/
 پشتیبانی: 09213234340
 
-Note: Validate the exact on-device functions and capture authentic screenshots before store submission.
+Note: Verify the actual on-device app workflow and take genuine app screenshots before publishing.

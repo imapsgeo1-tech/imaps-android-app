@@ -1,3 +1,2 @@
-Release v1.1.0 first production-signing validation
-GitHub repository secret: IMAPS_RELEASE_KEY_BUNDLE
-Do not write private credentials into this file.
+Release v1.1.1: correct home page to aerial photography year lookup; replace v1.1.0 Bazaar upload
+Use existing private Actions secret; never commit signing credentials.

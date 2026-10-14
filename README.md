@@ -1,6 +1,6 @@
 # iMaps Android Application
 
-Android WebView application for the iMaps Online Map at https://i-maps.ir.
+Android WebView application for the iMaps historical aerial photography years lookup at https://i-maps.ir/سامانه-استعلام-سالهای-عکسبرداری-آیمپس/.
 
 - Native Android application, Java 17, Android Gradle Plugin 8.7.3
 - Android 6.0+ (API 23)
@@ -30,3 +30,6 @@ A compact native floating support button offers:
 - Telephone: `ACTION_DIAL tel:09213234340` (opens the device dialer; does not place a call automatically).
 
 This version remains a debug-signed build. Separate GitHub Actions debug builds may use different signing keys, so older test versions may need to be uninstalled first.
+
+## v1.1.1
+Fix incorrect map/converter landing page in v1.1.0; launch the historical aerial photography survey years lookup instead. Rename app accordingly and use same release signing key/application ID. Publish v1.1.1 to Bazaar instead of v1.1.0.
