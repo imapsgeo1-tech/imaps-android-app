@@ -37,7 +37,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
     private static final String HOME_URL =
-        "https://i-maps.ir/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%A7%D8%B3%D8%AA%D8%B9%D9%84%D8%A7%D9%85-%D8%B3%D8%A7%D9%84%D9%87%D8%A7%DB%8C-%D8%B9%DA%A9%D8%B3%D8%A8%D8%B1%D8%AF%D8%A7%D8%B1%DB%8C-%D8%A2%DB%8C%D9%85%D9%BE%D8%B3/";
+        "https://i-maps.ir/?page_id=16588";
     private static final int PICK_FILE = 1001;
     private static final int LOC_PERMISSION = 1002;
     private static final int NAVY = Color.rgb(11, 50, 67);

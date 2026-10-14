@@ -33,3 +33,6 @@ This version remains a debug-signed build. Separate GitHub Actions debug builds 
 
 ## v1.1.1
 Fix incorrect map/converter landing page in v1.1.0; launch the historical aerial photography survey years lookup instead. Rename app accordingly and use same release signing key/application ID. Publish v1.1.1 to Bazaar instead of v1.1.0.
+
+## v1.1.2
+Fix HTTP 404 in aerial photo year lookup: load the verified WordPress page by stable ID `https://i-maps.ir/?page_id=16588` rather than an incorrectly guessed Persian slug. Same app ID and official release signing key as earlier production versions.

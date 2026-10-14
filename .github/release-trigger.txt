@@ -1,2 +1,2 @@
-Release v1.1.1: correct home page to aerial photography year lookup; replace v1.1.0 Bazaar upload
-Use existing private Actions secret; never commit signing credentials.
+Release v1.1.2: replace broken Persian slug with verified WordPress page ID 16588 for aerial photography year lookup.
+Keep the same signing secret and app ID; replace Bazaar APK with this build.
