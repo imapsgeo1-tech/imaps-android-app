@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
     private static final int NAVY = Color.rgb(11, 50, 67);
     private static final int TEAL = Color.rgb(18, 141, 153);
 
-    private LinearLayout root, header, footer;
+    private LinearLayout root;
     private WebView web;
     private ProgressBar progress;
     private TextView errorView;
@@ -94,29 +94,6 @@ public class MainActivity extends Activity {
         root.setBackgroundColor(Color.WHITE);
         setContentView(root);
 
-        header = new LinearLayout(this);
-        header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setOrientation(LinearLayout.HORIZONTAL);
-        header.setPadding(dp(15), dp(7), dp(15), dp(7));
-        header.setBackgroundColor(NAVY);
-        root.addView(header, new LinearLayout.LayoutParams(-1, dp(62)));
-
-        TextView logo = text("i", 23, Color.WHITE);
-        logo.setTypeface(null, Typeface.BOLD);
-        logo.setBackground(bg(TEAL, 12));
-        header.addView(logo, new LinearLayout.LayoutParams(dp(42), dp(42)));
-
-        TextView title = text("آیمپس | نقشه آنلاین", 17, Color.WHITE);
-        title.setTypeface(null, Typeface.BOLD);
-        title.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
-        title.setPadding(dp(9), 0, dp(9), 0);
-        header.addView(title, new LinearLayout.LayoutParams(0, -1, 1));
-
-        TextView expand = text("⛶", 26, Color.WHITE);
-        expand.setContentDescription("نمایش تمام صفحه");
-        expand.setOnClickListener(v -> setFullscreen(!fullscreen));
-        header.addView(expand, new LinearLayout.LayoutParams(dp(42), -1));
-
         FrameLayout content = new FrameLayout(this);
         root.addView(content, new LinearLayout.LayoutParams(-1, 0, 1));
 
@@ -154,15 +131,6 @@ public class MainActivity extends Activity {
         });
         content.addView(errorView, new FrameLayout.LayoutParams(-1, -1));
 
-        footer = new LinearLayout(this);
-        footer.setOrientation(LinearLayout.HORIZONTAL);
-        footer.setBackgroundColor(Color.rgb(239, 246, 248));
-        root.addView(footer, new LinearLayout.LayoutParams(-1, dp(58)));
-        action("خانه", footer, v -> web.loadUrl(HOME_URL));
-        action("بارگذاری مجدد", footer, v -> { errorView.setVisibility(View.GONE); web.reload(); });
-        action("اشتراک گذاری", footer, v -> share());
-        action("بیشتر", footer, v -> menu(v));
-
         web.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest request) {
@@ -178,6 +146,7 @@ public class MainActivity extends Activity {
             public void onPageFinished(WebView v, String url) {
                 if (!loadError) errorView.setVisibility(View.GONE);
                 progress.setVisibility(View.GONE);
+                hideWebsiteHeader();
             }
             @Override
             public void onReceivedError(WebView v, WebResourceRequest req, WebResourceError err) {
@@ -307,8 +276,36 @@ public class MainActivity extends Activity {
 
     private void setFullscreen(boolean value) {
         fullscreen = value;
-        header.setVisibility(value ? View.GONE : View.VISIBLE);
-        footer.setVisibility(value ? View.GONE : View.VISIBLE);
+        if (value) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }
+    }
+
+    // Remove WordPress theme chrome, not the WebGIS map controls.
+    private void hideWebsiteHeader() {
+        Uri uri = Uri.parse(web.getUrl() == null ? HOME_URL : web.getUrl());
+        String host = uri.getHost();
+        if (host == null || !(host.equalsIgnoreCase("i-maps.ir") ||
+              host.toLowerCase().endsWith(".i-maps.ir"))) return;
+        String script = "(function(){" +
+            "if(document.getElementById('imaps-android-clean'))return;" +
+            "var el=document.createElement('style');el.id='imaps-android-clean';" +
+            "el.textContent='#masthead,.site-header,.site-footer,#colophon," +
+            ".elementor-location-header,.elementor-location-footer," +
+            ".page-header,.entry-header,.breadcrumb,.breadcrumbs," +
+            ".elementor-widget-theme-post-title,.page-title,'+" +
+            "'#wpadminbar{display:none!important;}" +
+            "html,body{margin:0!important;padding:0!important;}" +
+            "#content,.site-content,.content-area,main.site-main{" +
+            "max-width:100%!important;width:100%!important;" +
+            "margin:0!important;padding:0!important;}';" +
+            "document.head.appendChild(el);" +
+            "})();";
+        web.evaluateJavascript(script, null);
     }
 
     private boolean hasLocation() {

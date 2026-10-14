@@ -15,3 +15,6 @@ Download the artifact ZIP; inside it is `app-debug.apk`. Extract and install on 
 
 This is a debug-signed APK intended for testing. Production release signing requires a private keystore.
 The actual interactive map content is loaded from the website and requires internet access.
+
+## v1.0.2
+Full-screen map UI: native header and footer removed. WordPress header/footer suppressed in embedded page while keeping mapping tools. Original 512px logo fetched at build from WordPress media library for launcher icon.
