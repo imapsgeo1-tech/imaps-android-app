@@ -105,8 +105,9 @@ public class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setGeolocationEnabled(true);
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(true);
+        // Prevent pinching/double-tapping the WebView page. Let Leaflet handle map zoom.
+        settings.setSupportZoom(false);
+        settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);

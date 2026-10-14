@@ -36,3 +36,6 @@ Fix incorrect map/converter landing page in v1.1.0; launch the historical aerial
 
 ## v1.1.2
 Fix HTTP 404 in aerial photo year lookup: load the verified WordPress page by stable ID `https://i-maps.ir/?page_id=16588` rather than an incorrectly guessed Persian slug. Same app ID and official release signing key as earlier production versions.
+
+## v1.1.3
+Disable WebView's built-in page pinch and double-tap zoom. All sidebar and controls stay fixed-size; the embedded interactive map retains its own JavaScript-based touch zoom and the map +/- controls. WordPress remains unchanged. Verify on physical Android device before publishing.
