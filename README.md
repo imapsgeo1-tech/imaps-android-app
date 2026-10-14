@@ -42,3 +42,6 @@ Disable WebView's built-in page pinch and double-tap zoom. All sidebar and contr
 
 ## v1.1.4
 Add original user-provided IMAPS Iran Maps complete globe-and-lettering logo as a tiny native badge centered at top of the in-app survey map. Keep the full-screen site content, hidden WordPress header/footer, fixed UI zoom and JavaScript map zoom unchanged. Image is a small palette-optimized rendition of the original logo, included locally and usable without a separate image request. The website is unchanged.
+
+## v1.1.5
+Fix the logo obscuring map controls or title: render the unchanged IMAPS logo in a reserved 78dp native white header row above (outside) the WebView. Keep all map UI below this row with its own full remaining layout space. No floating logo or overlay; no added text or menu. Same package and official signing key; unchanged website, map zoom and contact tools.

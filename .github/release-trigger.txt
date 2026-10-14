@@ -1,1 +1,1 @@
-Release v1.1.4: Add compact in-app floating full original IMAPS logo at top center; survey lookup and map zoom remain unchanged. Use existing signing secret and same application ID.
+Release v1.1.5: fix header logo overlap by moving it into a fixed 78dp dedicated white native strip above the web map. No change to website, lookup app ID, signing key, or map controls.

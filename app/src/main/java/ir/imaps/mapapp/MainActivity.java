@@ -97,6 +97,27 @@ public class MainActivity extends Activity {
         root.setBackgroundColor(Color.WHITE);
         setContentView(root);
 
+        // Fixed-height, dedicated branding row outside the WebView.
+        // It takes up its own space, so the logo can never cover map controls or text.
+        FrameLayout logoRow = new FrameLayout(this);
+        logoRow.setBackgroundColor(Color.WHITE);
+        root.addView(logoRow, new LinearLayout.LayoutParams(-1, dp(78)));
+
+        ImageView logoImage = new ImageView(this);
+        logoImage.setImageResource(R.drawable.imaps_full_logo);
+        logoImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        logoImage.setContentDescription("لوگوی اصلی آیمپس ایران مپس");
+        FrameLayout.LayoutParams logoParams = new FrameLayout.LayoutParams(
+            dp(72), dp(72), Gravity.CENTER);
+        logoRow.addView(logoImage, logoParams);
+
+        View logoSeparator = new View(this);
+        logoSeparator.setBackgroundColor(Color.rgb(226, 232, 236));
+        FrameLayout.LayoutParams separatorParams = new FrameLayout.LayoutParams(
+            -1, dp(1), Gravity.BOTTOM);
+        logoRow.addView(logoSeparator, separatorParams);
+
+        // All content begins below the fixed logo row.
         FrameLayout content = new FrameLayout(this);
         root.addView(content, new LinearLayout.LayoutParams(-1, 0, 1));
 
@@ -256,24 +277,6 @@ public class MainActivity extends Activity {
         });
 
         ContactOverlay.attach(this, content);
-
-        // Original IMAPS globe-and-lettering logo, shown only in the Android app.
-        // A small floating badge keeps the full map and survey tools visible.
-        FrameLayout logoBadge = new FrameLayout(this);
-        logoBadge.setBackground(bg(Color.WHITE, 12));
-        logoBadge.setElevation(dp(4));
-        FrameLayout.LayoutParams badgeParams = new FrameLayout.LayoutParams(
-            dp(76), dp(76), Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-        badgeParams.topMargin = dp(6);
-        content.addView(logoBadge, badgeParams);
-
-        ImageView logoImage = new ImageView(this);
-        logoImage.setImageResource(R.drawable.imaps_full_logo);
-        logoImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        logoImage.setContentDescription("لوگوی اصلی آیمپس ایران مپس");
-        FrameLayout.LayoutParams imageParams = new FrameLayout.LayoutParams(
-            dp(70), dp(70), Gravity.CENTER);
-        logoBadge.addView(logoImage, imageParams);
 
         if (state == null || web.restoreState(state) == null) web.loadUrl(HOME_URL);
     }
