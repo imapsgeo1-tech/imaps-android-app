@@ -134,6 +134,22 @@ public class MainActivity extends Activity {
         content.addView(errorView, new FrameLayout.LayoutParams(-1, -1));
 
         web.setWebViewClient(new WebViewClient() {
+            // Goftino is hidden only in this app. Normal website visitors still see it.
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                Uri target = request.getUrl();
+                String host = target.getHost();
+                if (host != null) {
+                    host = host.toLowerCase(java.util.Locale.ROOT);
+                    if (host.equals("goftino.com") || host.endsWith(".goftino.com")
+                            || host.equals("goftino.net") || host.endsWith(".goftino.net")
+                            || host.equals("goftino.io") || host.endsWith(".goftino.io")) {
+                        return new WebResourceResponse("text/plain", "UTF-8",
+                            new java.io.ByteArrayInputStream(new byte[0]));
+                    }
+                }
+                return super.shouldInterceptRequest(view, request);
+            }
             @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest request) {
                 return navigate(request.getUrl());
@@ -237,6 +253,8 @@ public class MainActivity extends Activity {
             }
         });
 
+        ContactOverlay.attach(this, content);
+
         if (state == null || web.restoreState(state) == null) web.loadUrl(HOME_URL);
     }
 
@@ -304,6 +322,25 @@ public class MainActivity extends Activity {
               host.toLowerCase().endsWith(".i-maps.ir"))) return;
         String script = "(function(){try{var id='imaps-android-only-style';var css=\"#wpadminbar,#masthead,#site-header,#site-header-wrap,#header,#header-wrap,body > header,header[role='banner'],header.site-header,.site-header,.site-header-wrap,.main-header,.header-main,.header-area,.header-wrapper,.header-container,.header-top,.top-header,.top-bar,.topbar,.topbar-area,.mobile-header,.mobile-header-wrapper,.mobile-menu-header,.elementor-location-header,.elementor-header,[class*='karauos-header'],[id*='karauos-header'],[class*='themento-header'],.sticky-header,.sticky-header-wrap,.site-footer,#colophon,#site-footer,footer[role='contentinfo'],.elementor-location-footer,.page-header,.entry-header,.page-title-area,.page-title-wrap,.page-title-bar,.page-title,.breadcrumb,.breadcrumbs,#breadcrumb,.breadcrumb-wrapper,.scroll-to-top,.back-to-top{display:none!important;height:0!important;max-height:0!important;min-height:0!important;margin:0!important;padding:0!important;visibility:hidden!important;}html,body{padding-top:0!important;margin-top:0!important;}#page,.site,#content,.site-content,#primary,.content-area,main.site-main,.site-main{padding-top:0!important;margin-top:0!important;}#content,.site-content,#primary,.content-area,main.site-main,.site-main{max-width:100%!important;width:100%!important;}\";function apply(){if(!document.head)return;var style=document.getElementById(id);if(!style){style=document.createElement('style');style.id=id;style.textContent=css;document.head.appendChild(style);}if(!document.body)return;document.querySelectorAll(\"#wpadminbar,#masthead,#site-header,#site-header-wrap,#header,#header-wrap,body > header,header[role='banner'],header.site-header,.site-header,.main-header,.header-main,.header-area,.header-wrapper,.header-container,.top-header,.top-bar,.topbar,.mobile-header,.elementor-location-header,.elementor-header,[class*='karauos-header'],[id*='karauos-header'],[class*='themento-header'],.sticky-header,.site-footer,#colophon,#site-footer,footer[role='contentinfo'],.elementor-location-footer,.page-header,.entry-header,.page-title-area,.page-title-wrap,.page-title-bar,.breadcrumb,.breadcrumbs\").forEach(function(node){if(node.closest&&node.closest('#imaps-coordinate-map,#imaps-map,.leaflet-container'))return;node.style.setProperty('display','none','important');});}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});if(!window.__imapsAppHeaderWatcher&&document.documentElement){window.__imapsAppHeaderWatcher=new MutationObserver(function(changes){if(changes.some(function(change){return change.addedNodes.length>0;}))apply();});window.__imapsAppHeaderWatcher.observe(document.documentElement,{childList:true,subtree:true});}}catch(e){}})();";
         web.evaluateJavascript(script, null);
+        // Fallback for a Goftino launcher inserted by the theme or another script.
+        String widgetScript = "(function(){try{" +
+            "var selector='iframe[src*=\\\"goftino\\\" i],[id*=\\\"goftino\\\" i],[class*=\\\"goftino\\\" i],[data-goftino]';" +
+            "function clean(){" +
+            "document.querySelectorAll(selector).forEach(function(el){el.remove();});" +
+            "if(!document.getElementById('imaps-contact-filter')){" +
+            "var style=document.createElement('style');style.id='imaps-contact-filter';" +
+            "style.textContent=selector+'{display:none!important;visibility:hidden!important}';" +
+            "document.head.appendChild(style);}" +
+            "}" +
+            "clean();" +
+            "if(!window.__imapsContactCleaner&&document.documentElement){" +
+            "window.__imapsContactCleaner=new MutationObserver(function(m){" +
+            "if(m.some(function(a){return a.addedNodes.length>0;}))clean();" +
+            "});window.__imapsContactCleaner.observe(document.documentElement,{" +
+            "childList:true,subtree:true});}" +
+            "}catch(e){}})();";
+        web.evaluateJavascript(widgetScript, null);
+
     }
 
     private boolean hasLocation() {

@@ -21,3 +21,12 @@ Full-screen map UI: native header and footer removed. WordPress header/footer su
 
 ## v1.0.3
 Only within Android WebView: hide WordPress Karauos/Elementor site header/footer and use fullscreen status bar, leaving map controls and public website unchanged.
+
+## v1.0.4
+Android app only: Goftino resources are blocked inside the WebView and Goftino DOM launchers are hidden. The public i-maps.ir website, its chat plugin and SEO remain untouched.
+
+A compact native floating support button offers:
+- WhatsApp: `https://wa.me/989213234340` (opens WhatsApp, or its web landing page if unavailable)
+- Telephone: `ACTION_DIAL tel:09213234340` (opens the device dialer; does not place a call automatically).
+
+This version remains a debug-signed build. Separate GitHub Actions debug builds may use different signing keys, so older test versions may need to be uninstalled first.
