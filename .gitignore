@@ -4,4 +4,10 @@ build/
 local.properties
 *.keystore
 *.jks
+*.p12
+*.pem
+*.key
+keystore.properties
+GITHUB_ACTIONS_SECRET.txt
+KEYSTORE_RECOVERY.txt
 .idea/

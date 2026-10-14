@@ -1,0 +1,91 @@
+name: Build signed iMaps Release APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Fetch official iMaps launcher icon
+        run: |
+          mkdir -p app/src/main/res/drawable-nodpi
+          curl --fail --location --show-error --retry 3 \
+            --output app/src/main/res/drawable-nodpi/ic_launcher.png \
+            "https://i-maps.ir/wp-content/uploads/2022/11/cropped-Logo-removebg-preview.png"
+          test "$(wc -c < app/src/main/res/drawable-nodpi/ic_launcher.png)" -gt 1000
+
+      - name: Set up Android SDK
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" \
+            "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Prepare private release signing credentials
+        env:
+          IMAPS_RELEASE_KEY_BUNDLE: ${{ secrets.IMAPS_RELEASE_KEY_BUNDLE }}
+        run: |
+          python3 - <<'PY'
+          import base64, binascii, json, os, pathlib, sys
+          bundle = os.environ.get('IMAPS_RELEASE_KEY_BUNDLE', '')
+          if not bundle:
+              sys.exit('Please add repository Actions secret IMAPS_RELEASE_KEY_BUNDLE before building Release.')
+          try:
+              data = json.loads(base64.b64decode(bundle.strip(), validate=True).decode('utf-8'))
+              key_bytes = base64.b64decode(data['keystore_base64'], validate=True)
+              if not key_bytes or len(key_bytes) < 200:
+                  raise ValueError('Keystore is empty or too short')
+              key_path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'imaps-production-keystore.jks'
+              key_path.write_bytes(key_bytes)
+              key_path.chmod(0o600)
+              values = {
+                  'IMAPS_RELEASE_KEYSTORE_FILE': str(key_path),
+                  'IMAPS_RELEASE_STORE_PASSWORD': data['store_password'],
+                  'IMAPS_RELEASE_KEY_ALIAS': data['key_alias'],
+                  'IMAPS_RELEASE_KEY_PASSWORD': data['key_password']
+              }
+              for name in ('IMAPS_RELEASE_STORE_PASSWORD', 'IMAPS_RELEASE_KEY_PASSWORD'):
+                  print('::add-mask::' + values[name])
+              with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as out:
+                  for name, value in values.items():
+                      if '\n' in value or '\r' in value:
+                          raise ValueError('Invalid newline in keystore configuration')
+                      out.write(name + '=' + value + '\n')
+          except (ValueError, KeyError, binascii.Error, UnicodeError) as e:
+              sys.exit('Invalid IMAPS_RELEASE_KEY_BUNDLE: ' + type(e).__name__)
+          PY
+
+      - name: Build official signed release APK
+        run: gradle --no-daemon --stacktrace assembleRelease
+
+      - name: Verify signatures and package identity
+        run: |
+          APK="app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify \
+            --verbose --print-certs --min-sdk-version 23 "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -5
+
+      - name: Publish installable release APK as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iMaps-Official-Release-APK
+          path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove temporary release key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/imaps-production-keystore.jks"

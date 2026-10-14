@@ -1,19 +1,48 @@
 plugins {
     id 'com.android.application'
 }
+
+// The production keystore and passwords are supplied by GitHub Actions secrets.
+// Never commit signing credentials into this public repository.
+def releaseStoreFile = System.getenv('IMAPS_RELEASE_KEYSTORE_FILE')
+def releaseStorePassword = System.getenv('IMAPS_RELEASE_STORE_PASSWORD')
+def releaseAlias = System.getenv('IMAPS_RELEASE_KEY_ALIAS')
+def releaseKeyPassword = System.getenv('IMAPS_RELEASE_KEY_PASSWORD')
+
 android {
     namespace 'ir.imaps.mapapp'
     compileSdk 35
+
     defaultConfig {
         applicationId 'ir.imaps.mapapp'
         minSdk 23
         targetSdk 34
-        versionCode 5
-        versionName '1.0.4'
+        versionCode 6
+        versionName '1.1.0'
+    }
+
+    signingConfigs {
+        release {
+            if (releaseStoreFile && releaseStorePassword && releaseAlias && releaseKeyPassword) {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseAlias
+                keyPassword releaseKeyPassword
+                storeType 'pkcs12'
+                enableV1Signing true
+                enableV2Signing true
+            }
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
+            if (releaseStoreFile && releaseStorePassword && releaseAlias && releaseKeyPassword) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            debuggable true
         }
     }
     compileOptions {
