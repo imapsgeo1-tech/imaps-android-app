@@ -91,7 +91,7 @@ public final class SplashOverlay {
         globe.setContentDescription("نقشه ایران");
         stage.addView(globe, new FrameLayout.LayoutParams(-1, -1));
         entrance(globe, 60, 1050, .78f, dp(8), -17f);
-        globe.animate().alpha(0f).setStartDelay(1080).setDuration(480).start();
+        handler.postDelayed(() -> globe.animate().alpha(0f).setDuration(480).start(), 1090);
 
         ImageView complete = new ImageView(activity);
         complete.setImageResource(R.drawable.imaps_full_logo);
@@ -125,7 +125,7 @@ public final class SplashOverlay {
     private static final class ContourField extends View {
         private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Path line = new Path();
-        ContourField(Activity context) { super(context); setLayerType(View.LAYER_TYPE_SOFTWARE, null); }
+        ContourField(Activity context) { super(context);  }
         @Override protected void onDraw(Canvas c) {
             int w = getWidth(), h = getHeight();
             if (w<=0 || h<=0) return;
