@@ -46,7 +46,7 @@ jobs:
           import pathlib, struct, sys
           p = pathlib.Path("app/src/main/res/drawable-nodpi/imaps_full_logo.png")
           buf = p.read_bytes()
-          if not buf.startswith(b'\\x89PNG\\r\\n\\x1a\\n'):
+          if buf[:8] != bytes([137,80,78,71,13,10,26,10]):
               sys.exit("Logo URL did not return a PNG")
           width,height = struct.unpack(">II",buf[16:24])
           print(f"Bundled complete IMAPS logo: {width}x{height} ({len(buf)} bytes)")

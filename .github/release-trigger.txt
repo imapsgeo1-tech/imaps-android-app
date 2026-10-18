@@ -1,1 +1,2 @@
 Release v1.2.1: Fix splash lag and lower-quality iMaps logo. Use original high-resolution full IMAPS / IRAN MAPS WordPress logo, native lightweight entrance with topographic contour background, genuine logo only rotating during inquiry with NO circle/box/text/dimmer. Preserve KMZ, zoom, fixed copyright and phone-only control. Same signing cert and package ID.
+PNG byte-signature fix. 
