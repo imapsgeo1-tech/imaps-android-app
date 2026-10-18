@@ -48,3 +48,12 @@ Fix the logo obscuring map controls or title: render the unchanged IMAPS logo in
 
 ## v1.1.6
 Fix selecting KMZ files from an Android phone: replace the MIME-filtered WebChromeClient default picker with Android's Storage Access Framework ACTION_OPEN_DOCUMENT, CATEGORY_OPENABLE, and wildcard MIME type (*/*), with temporary read access to the chosen content URI. This is necessary because some KMZ files report application/octet-stream and were hidden by Android's MIME filters. Preserve support for other survey input types and multi-selection if the webpage requests it. No blanket storage permission, website changes, app branding changes, or map zoom changes. Use the same production signing key/application ID.
+
+## v1.2.0 animated splash and inquiry UX
+- Original logo artwork is separated at runtime into the real Iran outline, golden globe and the exact IMAPS / IRAN MAPS letter arcs. The Iran layer has illustrated topo relief and contour hatching before the complete original mark assembles.
+- Professional dark-blue/gold IMAPS WebGIS splash; it finishes after initial page load and short entrance, with offline fallback.
+- In-app AJAX inquiry gets a centered rotating logo overlay; auto dismisses after a settled fetch/XHR and has a 22-second failsafe.
+- No visible top-loading progress stripe.
+- Right-hand native floating button is a single dial-phone icon, WhatsApp remains only in the web map (left).
+- Minimal persistent copyright © iMaps 2026 below main WebGIS content.
+- Same original survey page 16588, map pinch zoom restrictions and Android Storage Access Framework KMZ picker.

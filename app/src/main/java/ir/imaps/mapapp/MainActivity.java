@@ -54,6 +54,8 @@ public class MainActivity extends Activity {
     private android.webkit.ValueCallback<Uri[]> uploadCallback;
     private GeolocationPermissions.Callback locationCallback;
     private String locationOrigin;
+    private SplashOverlay splashOverlay;
+    private InquiryOverlay inquiryOverlay;
 
     private int dp(float value) {
         return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
@@ -92,10 +94,12 @@ public class MainActivity extends Activity {
             android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setNavigationBarColor(NAVY);
 
+        FrameLayout appShell = new FrameLayout(this);
         root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setBackgroundColor(Color.WHITE);
-        setContentView(root);
+        appShell.addView(root, new FrameLayout.LayoutParams(-1, -1));
+        setContentView(appShell);
 
         // Fixed-height, dedicated branding row outside the WebView.
         // It takes up its own space, so the logo can never cover map controls or text.
@@ -121,6 +125,13 @@ public class MainActivity extends Activity {
         FrameLayout content = new FrameLayout(this);
         root.addView(content, new LinearLayout.LayoutParams(-1, 0, 1));
 
+        // Persistent unobtrusive copyright line BELOW WebGIS content.
+        TextView copyright = text("© iMaps 2026", 10, Color.rgb(113, 132, 143));
+        copyright.setGravity(Gravity.CENTER);
+        copyright.setBackgroundColor(Color.WHITE);
+        copyright.setContentDescription("تمام حقوق متعلق به آیمپس");
+        root.addView(copyright, new LinearLayout.LayoutParams(-1, dp(21)));
+
         web = new WebView(this);
         content.addView(web, new FrameLayout.LayoutParams(-1, -1));
         WebSettings settings = web.getSettings();
@@ -141,10 +152,10 @@ public class MainActivity extends Activity {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
 
+        // Keep an unattached progress observer for WebChromeClient events.
+        // Never render the old horizontal loading bar on screen.
         progress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         progress.setMax(100);
-        FrameLayout.LayoutParams loadingParams = new FrameLayout.LayoutParams(-1, dp(3), Gravity.TOP);
-        content.addView(progress, loadingParams);
 
         errorView = text("", 15, NAVY);
         errorView.setPadding(dp(22), dp(22), dp(22), dp(22));
@@ -193,15 +204,21 @@ public class MainActivity extends Activity {
                 if (!loadError) errorView.setVisibility(View.GONE);
                 progress.setVisibility(View.GONE);
                 hideWebsiteHeader();
+                if (splashOverlay != null) splashOverlay.onPageReady();
             }
             @Override
             public void onReceivedError(WebView v, WebResourceRequest req, WebResourceError err) {
-                if (req.isForMainFrame()) showError("صفحه بارگذاری نشد. اتصال اینترنت را بررسی کنید.\nبرای تلاش مجدد اینجا را لمس کنید.");
+                if (req.isForMainFrame()) {
+                    showError("صفحه بارگذاری نشد. اتصال اینترنت را بررسی کنید.\nبرای تلاش مجدد اینجا را لمس کنید.");
+                    if (splashOverlay != null) splashOverlay.onPageReady();
+                }
             }
             @Override
             public void onReceivedHttpError(WebView v, WebResourceRequest req, WebResourceResponse resp) {
-                if (req.isForMainFrame() && resp.getStatusCode() >= 400)
+                if (req.isForMainFrame() && resp.getStatusCode() >= 400) {
                     showError("سرور سایت خطای " + resp.getStatusCode() + " داده است.\nبرای تلاش مجدد اینجا را لمس کنید.");
+                    if (splashOverlay != null) splashOverlay.onPageReady();
+                }
             }
         });
 
@@ -288,8 +305,12 @@ public class MainActivity extends Activity {
         });
 
         ContactOverlay.attach(this, content);
+        inquiryOverlay = new InquiryOverlay(this, appShell);
+        inquiryOverlay.attach(web);
+        splashOverlay = new SplashOverlay(this, appShell);
 
         if (state == null || web.restoreState(state) == null) web.loadUrl(HOME_URL);
+        else splashOverlay.onPageReady();
     }
 
     private void showError(String message) {
@@ -374,7 +395,7 @@ public class MainActivity extends Activity {
             "childList:true,subtree:true});}" +
             "}catch(e){}})();";
         web.evaluateJavascript(widgetScript, null);
-
+        if (inquiryOverlay != null) inquiryOverlay.inject(web);
     }
 
     private boolean hasLocation() {
@@ -416,6 +437,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (splashOverlay != null) splashOverlay.destroy();
+        if (inquiryOverlay != null) inquiryOverlay.destroy();
         if (uploadCallback != null) uploadCallback.onReceiveValue(null);
         if (locationCallback != null) locationCallback.invoke(locationOrigin, false, false);
         if (web != null) {

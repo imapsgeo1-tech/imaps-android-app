@@ -85,7 +85,7 @@ public final class SplashOverlay {
         topo.setScaleY(0.78f);
         topo.animate().alpha(1f).rotation(0f).scaleX(1.02f).scaleY(1.02f)
             .setDuration(870).setStartDelay(80).start();
-        topo.animate().alpha(0f).setStartDelay(1320).setDuration(510).start();
+        handler.postDelayed(() -> topo.animate().alpha(0f).setDuration(510).start(), 1320);
 
         enter(globe, 740, 1160, 0f, -9f, .88f);
         enter(upper, 1280, 700, -dp(16), -11f, 1.04f);

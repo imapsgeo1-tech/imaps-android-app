@@ -1,1 +1,1 @@
-Release v1.1.6: repair selection of KMZ/KML and other map files on Android via system Documents picker. Keep app-only branding, fixed zoom controls, page 16588, same package and signing key.
+Release v1.2.0: Real IMAPS Iran shape topographic native splash, staggered original globe and IMAPS/IRAN MAPS letter animation, inquiry loading overlay, copyright footer, single right-side phone icon, no top progress stripe. Keep 1.1.6 KMZ fix, page 16588, signing, zoom and original fixed header.
