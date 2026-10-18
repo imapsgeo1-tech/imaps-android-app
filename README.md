@@ -45,3 +45,6 @@ Add original user-provided IMAPS Iran Maps complete globe-and-lettering logo as 
 
 ## v1.1.5
 Fix the logo obscuring map controls or title: render the unchanged IMAPS logo in a reserved 78dp native white header row above (outside) the WebView. Keep all map UI below this row with its own full remaining layout space. No floating logo or overlay; no added text or menu. Same package and official signing key; unchanged website, map zoom and contact tools.
+
+## v1.1.6
+Fix selecting KMZ files from an Android phone: replace the MIME-filtered WebChromeClient default picker with Android's Storage Access Framework ACTION_OPEN_DOCUMENT, CATEGORY_OPENABLE, and wildcard MIME type (*/*), with temporary read access to the chosen content URI. This is necessary because some KMZ files report application/octet-stream and were hidden by Android's MIME filters. Preserve support for other survey input types and multi-selection if the webpage requests it. No blanket storage permission, website changes, app branding changes, or map zoom changes. Use the same production signing key/application ID.

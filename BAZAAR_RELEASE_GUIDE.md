@@ -25,7 +25,7 @@ This repo contains only source code. The signing key is NEVER committed.
 ## Package
 - Name: سامانه استعلام عکس هوایی آیمپس
 - Application ID: `ir.imaps.mapapp` (same as the first signed release)
-- Release version: `1.1.5` (`versionCode=11`)
+- Release version: `1.1.6` (`versionCode=12`)
 - Minimum Android: API 23 (Android 6.0)
 - Native contact buttons: WhatsApp and device dialer, with no direct call permission
 - Web content: https://i-maps.ir/?page_id=16588

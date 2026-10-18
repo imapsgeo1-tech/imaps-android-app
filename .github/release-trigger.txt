@@ -1,1 +1,1 @@
-Release v1.1.5: fix header logo overlap by moving it into a fixed 78dp dedicated white native strip above the web map. No change to website, lookup app ID, signing key, or map controls.
+Release v1.1.6: repair selection of KMZ/KML and other map files on Android via system Documents picker. Keep app-only branding, fixed zoom controls, page 16588, same package and signing key.

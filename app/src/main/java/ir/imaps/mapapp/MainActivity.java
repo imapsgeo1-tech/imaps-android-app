@@ -238,17 +238,28 @@ public class MainActivity extends Activity {
             @Override
             public boolean onShowFileChooser(WebView view,
                 android.webkit.ValueCallback<Uri[]> callback, FileChooserParams params) {
+                // Many Android file providers report KMZ as application/octet-stream
+                // rather than the formal Google Earth MIME type. WebChromeClient's
+                // default filtered intent can make these files invisible.
+                // The native Documents UI must allow all document types; the
+                // website still validates that the chosen file is supported.
                 if (uploadCallback != null) uploadCallback.onReceiveValue(null);
                 uploadCallback = callback;
                 try {
-                    startActivityForResult(
-                        Intent.createChooser(params.createIntent(), "انتخاب فایل نقشه"),
-                        PICK_FILE);
+                    Intent picker = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    picker.addCategory(Intent.CATEGORY_OPENABLE);
+                    picker.setType("*/*");
+                    picker.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    if (params.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE) {
+                        picker.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    }
+                    startActivityForResult(picker, PICK_FILE);
                     return true;
-                } catch (ActivityNotFoundException ex) {
+                } catch (ActivityNotFoundException | SecurityException ex) {
                     uploadCallback.onReceiveValue(null);
                     uploadCallback = null;
-                    Toast.makeText(MainActivity.this, "انتخاب فایل ممکن نیست", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,
+                        "فایل‌منیجر اندروید در دسترس نیست", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
