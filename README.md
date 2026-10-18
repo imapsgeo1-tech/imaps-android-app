@@ -57,3 +57,9 @@ Fix selecting KMZ files from an Android phone: replace the MIME-filtered WebChro
 - Right-hand native floating button is a single dial-phone icon, WhatsApp remains only in the web map (left).
 - Minimal persistent copyright © iMaps 2026 below main WebGIS content.
 - Same original survey page 16588, map pinch zoom restrictions and Android Storage Access Framework KMZ picker.
+
+## v1.2.1 UX smoothness and original iMaps mark
+- Lightweight 1.65 second native startup reveal, no runtime per-pixel splitting or slow startup loops; page can load behind it; upper safety timeout 5.5 seconds.
+- Full complete 300-500 px original brand logo sourced from official WordPress media 1834-removebg-preview-1, same artwork as owner's supplied source logo, to replace prior 160 px resized logo.
+- Inquiry loading is now ONLY the original transparent logo rotating in the center. No circle, background box, overlay dim, text, or extra UI. The progress bar remains removed.
+- Same call-only action, footer copyright, fixed top header, zoom and KMZ selection behaviour as v1.1.6.

@@ -198,6 +198,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageCommitVisible(WebView v, String url) {
                 hideWebsiteHeader();
+                if (splashOverlay != null) splashOverlay.onPageReady();
             }
             @Override
             public void onPageFinished(WebView v, String url) {
