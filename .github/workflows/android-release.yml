@@ -57,6 +57,15 @@ jobs:
               sys.exit("Brand image resolution below minimum")
           PY
 
+
+      - name: Prepare exact Iran globe and IMAPS lettering layers
+        run: |
+          python3 -m pip install --quiet --disable-pip-version-check Pillow
+          python3 scripts/generate_logo_layers.py
+          test -s app/src/main/res/drawable-nodpi/imaps_intro_iran.png
+          test -s app/src/main/res/drawable-nodpi/imaps_intro_globe.png
+          test -s app/src/main/res/drawable-nodpi/imaps_intro_letters.png
+
       - name: Set up Android SDK
         run: |
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" \

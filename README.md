@@ -63,3 +63,6 @@ Fix selecting KMZ files from an Android phone: replace the MIME-filtered WebChro
 - Full complete 300-500 px original brand logo sourced from official WordPress media 1834-removebg-preview-1, same artwork as owner's supplied source logo, to replace prior 160 px resized logo.
 - Inquiry loading is now ONLY the original transparent logo rotating in the center. No circle, background box, overlay dim, text, or extra UI. The progress bar remains removed.
 - Same call-only action, footer copyright, fixed top header, zoom and KMZ selection behaviour as v1.1.6.
+
+## v1.2.2 Cinematic 3-act transparent intro
+Build-time Pillow processing (in scripts/generate_logo_layers.py) separates exact pixel-perfect 500px brand artwork into Iran outline, golden globe and lettering, keeping every pixel intact. An offline GPU-animated native glass search interface types iMaps, transitions into Iran, globe, letters, and WebGIS. The app's website loads during the intro and takes over smoothly; no network video or startup-per-pixel work. Other features unchanged.
