@@ -55,7 +55,6 @@ public class MainActivity extends Activity {
     private GeolocationPermissions.Callback locationCallback;
     private String locationOrigin;
     private SplashOverlay splashOverlay;
-    private InquiryOverlay inquiryOverlay;
 
     private int dp(float value) {
         return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
@@ -306,8 +305,6 @@ public class MainActivity extends Activity {
         });
 
         ContactOverlay.attach(this, content);
-        inquiryOverlay = new InquiryOverlay(this, appShell);
-        inquiryOverlay.attach(web);
         splashOverlay = new SplashOverlay(this, appShell);
 
         if (state == null || web.restoreState(state) == null) web.loadUrl(HOME_URL);
@@ -396,7 +393,6 @@ public class MainActivity extends Activity {
             "childList:true,subtree:true});}" +
             "}catch(e){}})();";
         web.evaluateJavascript(widgetScript, null);
-        if (inquiryOverlay != null) inquiryOverlay.inject(web);
     }
 
     private boolean hasLocation() {
@@ -439,7 +435,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         if (splashOverlay != null) splashOverlay.destroy();
-        if (inquiryOverlay != null) inquiryOverlay.destroy();
         if (uploadCallback != null) uploadCallback.onReceiveValue(null);
         if (locationCallback != null) locationCallback.invoke(locationOrigin, false, false);
         if (web != null) {

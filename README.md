@@ -66,3 +66,6 @@ Fix selecting KMZ files from an Android phone: replace the MIME-filtered WebChro
 
 ## v1.2.2 Cinematic 3-act transparent intro
 Build-time Pillow processing (in scripts/generate_logo_layers.py) separates exact pixel-perfect 500px brand artwork into Iran outline, golden globe and lettering, keeping every pixel intact. An offline GPU-animated native glass search interface types iMaps, transitions into Iran, globe, letters, and WebGIS. The app's website loads during the intro and takes over smoothly; no network video or startup-per-pixel work. Other features unchanged.
+
+## v1.2.3 — Remove duplicate Android inquiry spinner
+The WebGIS site now supplies its own inquiry-loading animation on every platform. Remove the obsolete native Android InquiryOverlay, its injected JavaScript bridge, click listeners and separate rotating logo. Users see only the current animation from the website when they tap استعلام. Startup splash, copyright footer, KMZ document picker, map-only zoom, static top logo and phone-only contact remain unchanged.
