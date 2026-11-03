@@ -69,3 +69,10 @@ Build-time Pillow processing (in scripts/generate_logo_layers.py) separates exac
 
 ## v1.2.3 — Remove duplicate Android inquiry spinner
 The WebGIS site now supplies its own inquiry-loading animation on every platform. Remove the obsolete native Android InquiryOverlay, its injected JavaScript bridge, click listeners and separate rotating logo. Users see only the current animation from the website when they tap استعلام. Startup splash, copyright footer, KMZ document picker, map-only zoom, static top logo and phone-only contact remain unchanged.
+
+## v1.2.4 — Remotely controlled required updates (Cafe Bazaar)
+The signed APK checks a small public HTTPS policy at https://raw.githubusercontent.com/imapsgeo1-tech/imaps-android-app/main/app-update.json. It compares the installed numeric versionCode with minimum_supported_version_code. When below the minimum, a blocking, non-dismissible branded update screen prevents interaction with the in-app WebGIS and links to the official Cafe Bazaar page. The app periodically rechecks in foreground and caches a recent valid policy to help in temporary connectivity failures. It never silently installs APKs or requests additional permissions.
+
+**Current launch policy is intentionally non-blocking:** latest_version_code=17 (v1.2.4), minimum_supported_version_code=16. Do NOT raise the minimum until a newer, identically signed APK is actually published and downloadable from Cafe Bazaar. For example, after v1.2.5 (versionCode 18) is publicly available, update app-update.json to latest_version_code=18, latest_version_name=1.2.5, minimum_supported_version_code=18 to require that release from v1.2.4 users. Update only the policy JSON: future clients don't need to be rebuilt to change the threshold. If GitHub raw is unreachable and no recent valid policy is cached, the app remains accessible (network-failure safe behavior); test accessibility from Iran.
+
+**Important limitation:** v1.2.3 and earlier shipped without UpdateGate, so those already-installed APKs cannot be forced to update by this new APK's code. This feature applies after users install v1.2.4 or newer. Website users are never affected.

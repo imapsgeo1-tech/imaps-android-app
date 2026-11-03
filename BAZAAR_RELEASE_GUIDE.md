@@ -25,7 +25,7 @@ This repo contains only source code. The signing key is NEVER committed.
 ## Package
 - Name: سامانه استعلام عکس هوایی آیمپس
 - Application ID: `ir.imaps.mapapp` (same as the first signed release)
-- Release version: `1.2.3` (`versionCode=16`)
+- Release version: `1.2.4` (`versionCode=17`)
 - Minimum Android: API 23 (Android 6.0)
 - Native contact buttons: WhatsApp and device dialer, with no direct call permission
 - Web content: https://i-maps.ir/?page_id=16588
@@ -51,3 +51,6 @@ Description:
 پشتیبانی: 09213234340
 
 Note: Verify the actual on-device app workflow and take genuine app screenshots before publishing.
+
+## سیاست به‌روزرسانی اجباری
+در نسخه 1.2.4 کنترل نسخه از فایل عمومی `app-update.json` در شاخه `main` این مخزن انجام می‌شود. مقدار ابتدایی `minimum_supported_version_code=16` است و هیچ کاربر فعلی را مسدود نمی‌کند. **فقط پس از انتشار و قابل دانلود شدن نسخه جدید در کافه‌بازار** حداقل نسخه را بالا ببرید. اگر اینترنت یا GitHub در دسترس نباشد و سیاست معتبرِ اخیر ذخیره نشده باشد، برنامه برای جلوگیری از قفل شدن اشتباهی اجرا می‌شود. نسخه‌های 1.2.3 و قدیمی‌تر که این کد را ندارند از راه دور قابل اجبار نیستند.

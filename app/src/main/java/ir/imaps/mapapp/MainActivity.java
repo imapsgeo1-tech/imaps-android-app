@@ -55,6 +55,7 @@ public class MainActivity extends Activity {
     private GeolocationPermissions.Callback locationCallback;
     private String locationOrigin;
     private SplashOverlay splashOverlay;
+    private UpdateGate updateGate;
 
     private int dp(float value) {
         return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
@@ -306,6 +307,9 @@ public class MainActivity extends Activity {
 
         ContactOverlay.attach(this, content);
         splashOverlay = new SplashOverlay(this, appShell);
+        // A remote minimum-supported-version policy can require an update
+        // in future releases; initially no version is blocked.
+        updateGate = new UpdateGate(this, appShell);
 
         if (state == null || web.restoreState(state) == null) web.loadUrl(HOME_URL);
         else splashOverlay.onPageReady();
@@ -433,7 +437,14 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (updateGate != null) updateGate.onResume();
+    }
+
+    @Override
     protected void onDestroy() {
+        if (updateGate != null) updateGate.destroy();
         if (splashOverlay != null) splashOverlay.destroy();
         if (uploadCallback != null) uploadCallback.onReceiveValue(null);
         if (locationCallback != null) locationCallback.invoke(locationOrigin, false, false);
