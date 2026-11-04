@@ -189,24 +189,35 @@
     }
     var container = document.createElement('div');
     container.id = 'imaps-android-gps-on-map';
+    // Compact icon at the lower-left INSIDE the map. This avoids the
+    // existing map-settings toggle on the upper-right and OSM attribution
+    // at the bottom-right. Keep a 48px inset for other map-edge overlays.
     container.style.cssText =
-      'position:absolute!important;top:14px!important;right:14px!important;' +
-      'bottom:auto!important;left:auto!important;z-index:1600!important;' +
-      'width:auto!important;height:auto!important;pointer-events:auto!important;';
+      'position:absolute!important;top:auto!important;right:auto!important;' +
+      'bottom:56px!important;left:14px!important;z-index:1600!important;' +
+      'width:46px!important;height:46px!important;pointer-events:auto!important;';
     var link = document.createElement('a');
     link.href = 'imaps://locate';
-    link.textContent = '◎ موقعیت من';
+    // Icon-only, but retains a full accessible name and a 46px tap target.
+    // The crosshair is inline SVG; no extra downloads or font dependencies.
+    link.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" ' +
+      'viewBox="0 0 24 24" fill="none" stroke="#08658c" stroke-width="2.2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6"/>' +
+      '<path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>' +
+      '</svg>';
     link.setAttribute('dir','rtl');
     link.setAttribute('role','button');
-    link.setAttribute('aria-label','نمایش موقعیت فعلی روی نقشه آیمپس');
+    link.setAttribute('aria-label','نمایش موقعیت فعلی روی نقشه');
+    link.setAttribute('title','موقعیت من');
     link.style.cssText =
       'display:flex!important;align-items:center!important;' +
       'justify-content:center!important;box-sizing:border-box!important;' +
-      'padding:9px 13px!important;min-width:121px!important;' +
-      'min-height:41px!important;border-radius:12px!important;' +
-      'border:1px solid #c3d6e1!important;background:#fff!important;' +
-      'color:#074d6b!important;font:700 13px/1.5 Tahoma,sans-serif!important;' +
-      'text-decoration:none!important;direction:rtl!important;' +
+      'padding:0!important;width:46px!important;height:46px!important;' +
+      'min-width:46px!important;min-height:46px!important;' +
+      'border-radius:13px!important;' +
+      'border:1px solid #bad2e2!important;background:#fff!important;' +
+      'color:#074d6b!important;text-decoration:none!important;' +
       'box-shadow:0 2px 9px rgba(5,29,50,.25)!important;' +
       'touch-action:manipulation!important;cursor:pointer!important;';
     container.appendChild(link);
@@ -250,8 +261,9 @@
     setBusy: function (busy) {
       if (!locateButton || !locateButton.isConnected) attachMapButton();
       if (!locateButton) return;
-      locateButton.textContent = busy ? '◌ مکان‌یابی…' : '◎ موقعیت من';
-      locateButton.style.opacity = busy ? '0.72' : '1';
+      // Never swap the icon for text: a long label would again overlap
+      // map settings. The icon dims while location acquisition runs.
+      locateButton.style.opacity = busy ? '0.55' : '1';
       locateButton.setAttribute('aria-busy', busy ? 'true' : 'false');
     },
     apply: function (latitude, longitude, accuracy) {
