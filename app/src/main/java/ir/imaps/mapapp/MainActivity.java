@@ -36,6 +36,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 public class MainActivity extends Activity {
     private static final String HOME_URL =
         "https://i-maps.ir/?page_id=16588";
@@ -56,6 +60,7 @@ public class MainActivity extends Activity {
     private String locationOrigin;
     private SplashOverlay splashOverlay;
     private UpdateGate updateGate;
+    private String locationControlScript;
 
     private int dp(float value) {
         return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
@@ -198,6 +203,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageCommitVisible(WebView v, String url) {
                 hideWebsiteHeader();
+                installLocationControl(v, url);
                 if (splashOverlay != null) splashOverlay.onPageReady();
             }
             @Override
@@ -205,6 +211,7 @@ public class MainActivity extends Activity {
                 if (!loadError) errorView.setVisibility(View.GONE);
                 progress.setVisibility(View.GONE);
                 hideWebsiteHeader();
+                installLocationControl(v, url);
                 if (splashOverlay != null) splashOverlay.onPageReady();
             }
             @Override
@@ -397,6 +404,37 @@ public class MainActivity extends Activity {
             "childList:true,subtree:true});}" +
             "}catch(e){}})();";
         web.evaluateJavascript(widgetScript, null);
+    }
+
+
+    /**
+     * Attach a location button only to the official iMaps HTTPS WebGIS.
+     * GPS access is requested by the webpage on the user's explicit tap and
+     * is gated by WebChromeClient.onGeolocationPermissionsShowPrompt above.
+     * The resolved coordinate is filled into the EXISTING geo input fields;
+     * no new inquiry API, native upload or background tracking is involved.
+     */
+    private void installLocationControl(WebView targetWebView, String currentUrl) {
+        try {
+            Uri uri = Uri.parse(currentUrl == null ? "" : currentUrl);
+            String host = uri.getHost();
+            if (!"https".equalsIgnoreCase(uri.getScheme()) || host == null ||
+                !(host.equalsIgnoreCase("i-maps.ir") ||
+                  host.endsWith(".i-maps.ir"))) return;
+            if (locationControlScript == null) {
+                try (InputStream in = getAssets().open("imaps-location.js");
+                     ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+                    byte[] bytes = new byte[4096];
+                    int n;
+                    while ((n = in.read(bytes)) != -1) buffer.write(bytes, 0, n);
+                    locationControlScript = buffer.toString(StandardCharsets.UTF_8.name());
+                }
+            }
+            targetWebView.evaluateJavascript(locationControlScript, null);
+        } catch (Exception e) {
+            // Location is an optional enhancement; never fail WebGIS loading.
+            android.util.Log.w("IMAPS", "Location control unavailable", e);
+        }
     }
 
     private boolean hasLocation() {
