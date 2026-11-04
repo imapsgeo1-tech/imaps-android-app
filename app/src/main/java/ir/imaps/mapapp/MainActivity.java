@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
     private SplashOverlay splashOverlay;
     private UpdateGate updateGate;
     private String locationControlScript;
+    private LocationFeature locationFeature;
 
     private int dp(float value) {
         return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
@@ -313,6 +314,9 @@ public class MainActivity extends Activity {
         });
 
         ContactOverlay.attach(this, content);
+        // Always-visible floating native GPS button; does NOT alter Leaflet
+        // controls or map attribution layout inside the WebView.
+        locationFeature = new LocationFeature(this, content, web);
         splashOverlay = new SplashOverlay(this, appShell);
         // A remote minimum-supported-version policy can require an update
         // in future releases; initially no version is blocked.
@@ -445,6 +449,7 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
         super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (locationFeature != null) locationFeature.onPermissionResult(requestCode);
         if (requestCode == LOC_PERMISSION && locationCallback != null) {
             locationCallback.invoke(locationOrigin, hasLocation(), false);
             locationCallback = null;
@@ -482,6 +487,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (locationFeature != null) locationFeature.destroy();
         if (updateGate != null) updateGate.destroy();
         if (splashOverlay != null) splashOverlay.destroy();
         if (uploadCallback != null) uploadCallback.onReceiveValue(null);
