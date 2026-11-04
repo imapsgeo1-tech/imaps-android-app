@@ -1,1 +1,3 @@
 Release v1.2.5 (versionCode 18): Add user-tap-only GPS locate button inside native WebGIS app map. Show true location/accuracy on Leaflet, auto-fill existing geographic input coordinate for Iranian locations, then use original inquiry button. No background tracking; no new Android permissions; preserve KMZ, animations, update gate, original signature.
+
+Final production release rebuild after trusted-domain matcher correction.
