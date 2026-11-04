@@ -7,7 +7,7 @@
   'use strict';
   // Only the official site may receive a native GPS enhancement.
   if (window.location.protocol !== 'https:' ||
-      !/(^|\\.)i-maps\\.ir$/i.test(window.location.hostname)) return;
+      !/(^|\.)i-maps\.ir$/i.test(window.location.hostname)) return;
   if (window.__imapsAndroidLocationInstalled) return;
   window.__imapsAndroidLocationInstalled = true;
 
