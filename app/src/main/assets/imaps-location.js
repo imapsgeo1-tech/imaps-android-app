@@ -1,17 +1,21 @@
 /*
- * iMaps Android location bridge v2.
- * The GPS button and fix are NATIVE Android UI/LocationManager.
- * This JavaScript only paints the GPS point in the existing Leaflet WebGIS
- * and fills the existing geo form. It creates NO Leaflet controls, to avoid
- * disturbing OpenStreetMap attribution, zoom and existing map controls.
+ * iMaps Android location bridge v3.
+ * The location button sits INSIDE the actual map container (not the Leaflet
+ * control pane). Clicking it invokes the native Android LocationManager via
+ * an explicitly user-clicked custom URL. No background tracking.
+ * The existing WebGIS geographic inputs and inquiry API are unchanged.
  */
 (function () {
   'use strict';
   if (location.protocol !== 'https:' ||
       !/(^|\.)i-maps\.ir$/i.test(location.hostname)) return;
-  if (window.IMAPSAndroidLocation && window.IMAPSAndroidLocation.version === 2) return;
+  if (window.IMAPSAndroidLocation && window.IMAPSAndroidLocation.version === 3) return;
   var marker = null, accuracyCircle = null, currentMap = null;
   var notice = null, noticeTimeout = 0;
+  var locateButton = null;
+  var locationMap = null;
+  var locationResetBound = false;
+  var setupAttempts = 0;
 
   // Keep OSM attribution in the bottom-right corner of the MAP, never
   // floating at the center or below. Styles are scoped to Android WebGIS.
@@ -105,10 +109,29 @@
     if (marker && map.hasLayer(marker)) map.removeLayer(marker);
     if (accuracyCircle && map.hasLayer(accuracyCircle)) map.removeLayer(accuracyCircle);
 
-    marker = L.circleMarker([lat,lon], {
-      radius: 9, color: '#ffffff', weight: 3, fillColor: '#1978df',
-      fillOpacity: 1, opacity: 1, bubblingMouseEvents: false
+    // Clearly visible approximate GPS pin, drawn at the actual phone fix.
+    // It does NOT assert a land boundary or survey-grade precision.
+    var gpsPin = window.L.divIcon({
+      className: 'imaps-android-gps-pin-wrap',
+      html: '<span style="display:block;width:34px;height:40px;'
+        + 'filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))">'
+        + '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="40" '
+        + 'viewBox="0 0 34 40" aria-hidden="true">'
+        + '<path d="M17 1 C8 1 2 8 2 17 C2 29 17 39 17 39 '
+        + 'C17 39 32 29 32 17 C32 8 26 1 17 1Z" '
+        + 'fill="#1175df" stroke="#fff" stroke-width="2.6"/>'
+        + '<circle cx="17" cy="16.5" r="6.3" fill="#fff"/>'
+        + '</svg></span>',
+      iconSize: [34,40],
+      iconAnchor: [17,39],
+      popupAnchor: [0,-35]
+    });
+    marker = window.L.marker([lat,lon], {
+      icon: gpsPin, zIndexOffset: 1500, keyboard: false
     }).addTo(map);
+    marker.bindTooltip('موقعیت تقریبی شما', {
+      direction: 'top', offset:[0,-34], opacity: 0.95
+    });
 
     if (Number.isFinite(accuracy) && accuracy > 0) {
       accuracyCircle = L.circle([lat,lon], {
@@ -117,7 +140,7 @@
         fillOpacity: .12, interactive: false
       }).addTo(map);
     }
-    marker.bindPopup('📍 موقعیت من' +
+    marker.bindPopup('📍 موقعیت تقریبی شما' +
       '<br>عرض: ' + lat.toFixed(6) +
       '<br>طول: ' + lon.toFixed(6) +
       (Number.isFinite(accuracy) ? '<br>دقت تقریبی: ' +
@@ -125,6 +148,8 @@
     map.invalidateSize({pan:false});
     map.setView([lat,lon], Math.max(map.getZoom(), 15), {animate:true});
     marker.openPopup();
+    // Make the pin itself discoverable when the user closes the popup.
+    marker.bringToFront && marker.bringToFront();
 
     if (lat < 24 || lat > 41 || lon < 43 || lon > 64) {
       notify(root,
@@ -146,8 +171,89 @@
     return true;
   }
 
+  function attachMapButton() {
+    var ready = getReady();
+    if (!ready || !ready.map || !ready.map.getContainer) return false;
+    var mapContainer = ready.map.getContainer();
+    if (!mapContainer || !mapContainer.isConnected) return false;
+    // DOM overlay inside the Leaflet map, never a Leaflet control whose
+    // position might be changed by custom theme/CSS rules.
+    var existing = mapContainer.querySelector('#imaps-android-gps-on-map');
+    if (existing) {
+      locateButton = existing.querySelector('a');
+      locationMap = ready.map;
+      return true;
+    }
+    if (locateButton && locateButton.isConnected && locationMap !== ready.map) {
+      locateButton.parentNode.remove();
+    }
+    var container = document.createElement('div');
+    container.id = 'imaps-android-gps-on-map';
+    container.style.cssText =
+      'position:absolute!important;top:14px!important;right:14px!important;' +
+      'bottom:auto!important;left:auto!important;z-index:1600!important;' +
+      'width:auto!important;height:auto!important;pointer-events:auto!important;';
+    var link = document.createElement('a');
+    link.href = 'imaps://locate';
+    link.textContent = '◎ موقعیت من';
+    link.setAttribute('dir','rtl');
+    link.setAttribute('role','button');
+    link.setAttribute('aria-label','نمایش موقعیت فعلی روی نقشه آیمپس');
+    link.style.cssText =
+      'display:flex!important;align-items:center!important;' +
+      'justify-content:center!important;box-sizing:border-box!important;' +
+      'padding:9px 13px!important;min-width:121px!important;' +
+      'min-height:41px!important;border-radius:12px!important;' +
+      'border:1px solid #c3d6e1!important;background:#fff!important;' +
+      'color:#074d6b!important;font:700 13px/1.5 Tahoma,sans-serif!important;' +
+      'text-decoration:none!important;direction:rtl!important;' +
+      'box-shadow:0 2px 9px rgba(5,29,50,.25)!important;' +
+      'touch-action:manipulation!important;cursor:pointer!important;';
+    container.appendChild(link);
+    mapContainer.appendChild(container);
+    if (window.L.DomEvent) {
+      window.L.DomEvent.disableClickPropagation(container);
+      window.L.DomEvent.disableScrollPropagation(container);
+    }
+    locateButton = link;
+    locationMap = ready.map;
+
+    // Clearing the inquiry must also remove the location marker and circle;
+    // this does not disturb user-drawn features or imported GIS files.
+    if (!locationResetBound) {
+      var resetButton = ready.root.querySelector('[data-iq="reset"]');
+      if (resetButton) {
+        resetButton.addEventListener('click', function () {
+          if (marker && currentMap && currentMap.hasLayer(marker)) {
+            currentMap.removeLayer(marker);
+          }
+          if (accuracyCircle && currentMap && currentMap.hasLayer(accuracyCircle)) {
+            currentMap.removeLayer(accuracyCircle);
+          }
+          marker = null;
+          accuracyCircle = null;
+        });
+        locationResetBound = true;
+      }
+    }
+    return true;
+  }
+
+  function waitForMap() {
+    if (attachMapButton()) return;
+    if (++setupAttempts > 80) return;
+    setTimeout(waitForMap, 400);
+  }
+
   window.IMAPSAndroidLocation = {
-    version: 2,
+    version: 3,
+    setBusy: function (busy) {
+      if (!locateButton || !locateButton.isConnected) attachMapButton();
+      if (!locateButton) return;
+      locateButton.textContent = busy ? '◌ مکان‌یابی…' : '◎ موقعیت من';
+      locateButton.style.opacity = busy ? '0.72' : '1';
+      locateButton.setAttribute('aria-busy', busy ? 'true' : 'false');
+    },
     apply: function (latitude, longitude, accuracy) {
       var lat = Number(latitude), lon = Number(longitude), acc = Number(accuracy);
       var attempts = 0;
@@ -177,4 +283,9 @@
   };
 
   repairAttribution();
+  // The map is typically initialized AFTER onPageCommitVisible; handle
+  // either order, delayed Leaflet startup, and page ready notifications.
+  waitForMap();
+  window.addEventListener('imaps-webgis-ready', attachMapButton, {passive:true});
+  document.addEventListener('DOMContentLoaded', attachMapButton, {once:true});
 })();
