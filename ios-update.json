@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "package_id": "ir.imaps.webgis",
+  "enabled": false,
+  "latest_build": 1,
+  "minimum_supported_build": 1,
+  "release_url": "",
+  "note": "Activate only after a signed replacement iOS app is published and its real store URL is verified."
+}
