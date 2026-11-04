@@ -25,7 +25,7 @@ This repo contains only source code. The signing key is NEVER committed.
 ## Package
 - Name: سامانه استعلام عکس هوایی آیمپس
 - Application ID: `ir.imaps.mapapp` (same as the first signed release)
-- Release version: `1.2.6` (`versionCode=19`)
+- Release version: `1.2.7` (`versionCode=20`)
 - Minimum Android: API 23 (Android 6.0)
 - Native contact buttons: WhatsApp and device dialer, with no direct call permission
 - Web content: https://i-maps.ir/?page_id=16588
@@ -60,3 +60,6 @@ Note: Verify the actual on-device app workflow and take genuine app screenshots 
 
 ### نسخه 1.2.6
 دکمه GPS این بار از نوع بومی اندروید و همیشه روی محتوای برنامه قابل مشاهده است. نشان مکان‌یابی بر اساس موقعیت واقعی گوشی (پس از تأیید مجوز) نمایش داده می‌شود. نشان OpenStreetMap به گوشه پایین نقشه با اندازه کوچک منتقل می‌شود. انتشار عمومی پس از آزمایش روی گوشی واقعی پیشنهاد می‌شود.
+
+### نسخه 1.2.7
+دکمه «موقعیت من» از نوار مستقل اندروید به داخل خود نقشه (بالا سمت راست) منتقل شد؛ با لمس آن مکان‌یابی بومی گوشی فعال می‌شود. موقعیت دریافتی با پین آبی «موقعیت تقریبی شما» و دایره دقت GPS نشان داده می‌شود و مختصات برای استعلام وارد فرم می‌شود. این نسخه قبل از عرضه عمومی باید روی گوشی اندرویدی آزمایش شود.

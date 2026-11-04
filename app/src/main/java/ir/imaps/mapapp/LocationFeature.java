@@ -28,13 +28,12 @@ import java.util.Locale;
 /**
  * Real native Android GPS action.
  *
- * Why a native button? The WebGIS site's custom Leaflet control styles and
- * asynchronous initialization made the former injected L.control unreliable.
- * A native overlay is always visibly above the WebView without moving or
- * reflowing OpenStreetMap attribution or any map tiles.
- *
- * The device location is requested only in response to a user tap, and is
- * never stored, tracked in the background, or sent to a server here.
+ * The visible button is now an HTML overlay physically INSIDE Leaflet's map
+ * container, anchored to its top right. Its explicit link click is handled by
+ * the Android WebViewClient, which calls onLocateRequest() below.
+ * Actual GPS access remains Android-native and on-demand. No JavaScript
+ * interface exposes device permissions to embedded third-party frames.
+ * Location is never tracked in the background or transmitted here.
  */
 public final class LocationFeature {
     public static final int PERMISSION_CODE = 1004;
@@ -77,11 +76,9 @@ public final class LocationFeature {
         action.setElevation(dp(7));
         action.setOnClickListener(v -> onTap());
 
-        FrameLayout.LayoutParams pos = new FrameLayout.LayoutParams(
-            dp(131), dp(45), Gravity.TOP | Gravity.RIGHT);
-        pos.topMargin = dp(12);
-        pos.rightMargin = dp(13);
-        host.addView(action, pos);
+        // The visible GPS button is injected in the WebGIS map's DOM.
+        // Do NOT attach the old native button to the activity surface:
+        // doing so would place it outside the scrollable map region.
     }
 
     private boolean trustedPage() {
@@ -105,6 +102,20 @@ public final class LocationFeature {
         action.setEnabled(!yes);
         action.setAlpha(yes ? .75f : 1f);
         action.setText(yes ? "◌ مکان‌یابی…" : "◎ موقعیت من");
+        // The button lives inside the real Leaflet map, so only update its
+        // label here; never move the map UI or attribution.
+        if (trustedPage()) {
+            web.evaluateJavascript(
+                "(function(){if(window.IMAPSAndroidLocation&&" +
+                "window.IMAPSAndroidLocation.version===3){" +
+                "window.IMAPSAndroidLocation.setBusy("+(yes ? "true" : "false")+");}})()",
+                null);
+        }
+    }
+
+    /** Called only for a real user-initiated, main-frame GPS link tap. */
+    public void onLocateRequest() {
+        onTap();
     }
 
     private void onTap() {
@@ -119,7 +130,7 @@ public final class LocationFeature {
         try {
             web.evaluateJavascript(
                 "(function(){return !!(window.IMAPSAndroidLocation" +
-                "&&window.IMAPSAndroidLocation.version===2" +
+                "&&window.IMAPSAndroidLocation.version===3" +
                 "&&window.imapsWebGISReady&&window.imapsWebGISReady.map" +
                 "&&document.querySelector('.imaps-gis'));})()",
                 result -> {
@@ -312,7 +323,5 @@ public final class LocationFeature {
         stopUpdates();
         main.removeCallbacksAndMessages(null);
         action.setOnClickListener(null);
-        ViewGroup parent = (ViewGroup) action.getParent();
-        if (parent != null) parent.removeView(action);
     }
 }

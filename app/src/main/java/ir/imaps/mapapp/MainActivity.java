@@ -192,7 +192,19 @@ public class MainActivity extends Activity {
             }
             @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest request) {
-                return navigate(request.getUrl());
+                Uri destination = request.getUrl();
+                // Only an explicit user tap in the main document may start
+                // GPS. This avoids exposing an Android JavaScript interface
+                // that third-party iframes could call without a user gesture.
+                if ("imaps".equalsIgnoreCase(destination.getScheme())
+                        && "locate".equalsIgnoreCase(destination.getHost())) {
+                    if (request.isForMainFrame() && request.hasGesture()
+                            && locationFeature != null) {
+                        locationFeature.onLocateRequest();
+                    }
+                    return true;
+                }
+                return navigate(destination);
             }
             @Override
             public void onPageStarted(WebView v, String url, android.graphics.Bitmap icon) {
